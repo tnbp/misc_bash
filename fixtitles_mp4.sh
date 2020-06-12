@@ -2,13 +2,13 @@
 
 IFS=$'\n'
 
-for fn in $(find /path/to/your/files -name *.mp4 -type f)
+for fn in $(find /net/external/Serien/ -name *.mp4 -type f)
 do
         newtitle=$(basename $fn .mp4)
-        oldtitle=$(AtomicParsley $fn -t | grep "nam\"" | sed 's/.*contains: \(.*\)$/\1/g')
+        oldtitle=$(exiftool "$fn" | grep Title | sed 's/^Title\s*: \(.*\)$/\1/g')
         if [ "$oldtitle" != "$newtitle" ]; then
                 echo "Old title: $oldtitle"
                 echo "New title: $newtitle"
-                AtomicParsley "$fn" -title "$newtitle"
+                exiftool "$fn" -Title="$newtitle"
         fi
 done
