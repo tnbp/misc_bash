@@ -7,6 +7,25 @@ PULSE_DEFAULT_CARD="alsa_card.pci-0000_08_00.4"
 
 ## END USER VARIABLES ##
 
+OPTIND=1
+UNLOCK_SCREEN=0
+CHANGE_RESOLUTION=0
+while getopts "?hux" opt; do
+        case "$opt" in
+                h|\?)
+                        echo -e "$(basename $0) [PARAMETERS]\n\t-? or -h: show this info\n\t-u: unlock screen on startup\n\t-x: change resolution on startup"
+                        exit
+                ;;
+                u)
+                        UNLOCK_SCREEN=1
+                ;;
+                x)
+                        CHANGE_RESOLUTION=1
+                ;;
+        esac
+done
+
+
 DISP_ORIGINAL=$(xrandr | grep -E '(^|\W)connected' -A 1 | grep -v -- --)
 
 DISP_DEVICES=$(echo "$DISP_ORIGINAL" | grep connected | sed 's/^\(.*\)[[:blank:]]\+connected.*/\1/')
@@ -30,7 +49,8 @@ do
         fi
 done
 
-$DISP_XRANDR_CMD_APPLY
+if [[ $CHANGE_RESOLUTION -eq 1 ]]; then $DISP_XRANDR_CMD_APPLY; fi
+if [[ $UNLOCK_SCREEN -eq 1 ]]; then loginctl unlock-session; fi
 
 PACTL_ALL_CARDS=$(pactl list short cards | sed 's/^\([0-9]\+\).*$/\1/g')
 
