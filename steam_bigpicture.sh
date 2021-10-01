@@ -72,4 +72,5 @@ fi
 PACTL_DEFAULT_CARD=$(pactl list short cards | grep "$PULSE_DEFAULT_CARD" | sed 's/^\([0-9]\+\).*$/\1/g')
 pactl set-card-profile "$PACTL_DEFAULT_CARD" output:analog-stereo
 
-$DISP_XRANDR_CMD_RESTORE
+
+if [[ $CHANGE_RESOLUTION -eq 1 ]]; then $DISP_XRANDR_CMD_RESTORE; fi
