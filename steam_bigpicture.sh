@@ -17,7 +17,8 @@ while getopts "?hux" opt; do
                         exit
                 ;;
                 u)
-                        UNLOCK_SCREEN=1
+                        SCREEN_LOCKED=$(qdbus org.freedesktop.ScreenSaver /ScreenSaver GetActive)
+                        if [[ "$SCREEN_LOCKED" == "true" ]]; then UNLOCK_SCREEN=1; fi
                 ;;
                 x)
                         CHANGE_RESOLUTION=1
@@ -74,3 +75,4 @@ pactl set-card-profile "$PACTL_DEFAULT_CARD" output:analog-stereo
 
 
 if [[ $CHANGE_RESOLUTION -eq 1 ]]; then $DISP_XRANDR_CMD_RESTORE; fi
+if [[ $UNLOCK_SCREEN -eq 1 ]]; then loginctl lock-session; fi
