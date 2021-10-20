@@ -60,6 +60,9 @@ do
         pactl set-card-profile "$card" off
 done
 
+inhibit_screensaver.py &
+INHIBIT_PID=$!
+
 STEAM_PID=$(pidof steam | cut -d ' ' -f1)
 if [[ -z $STEAM_PID ]]; then
         steam -bigpicture &
@@ -73,6 +76,7 @@ fi
 PACTL_DEFAULT_CARD=$(pactl list short cards | grep "$PULSE_DEFAULT_CARD" | sed 's/^\([0-9]\+\).*$/\1/g')
 pactl set-card-profile "$PACTL_DEFAULT_CARD" output:analog-stereo
 
+kill -9 "$INHIBIT_PID"
 
 if [[ $CHANGE_RESOLUTION -eq 1 ]]; then $DISP_XRANDR_CMD_RESTORE; fi
 if [[ $UNLOCK_SCREEN -eq 1 ]]; then loginctl lock-session; fi
