@@ -37,7 +37,8 @@ DISP_XRANDR_CMD_RESTORE="xrandr"
 
 for CURRENT_DEVICE in $DISP_DEVICES
 do
-        CURRENT_RES_AND_POS=$(echo "$DISP_ORIGINAL" | grep "$CURRENT_DEVICE connected" | sed 's/.*connected.*[[:blank:]]\+\([0-9]\+x[0-9]\++[0-9]\++[0-9]\+\).*/\1/')
+        CURRENT_RES_AND_POS=$(echo "$DISP_ORIGINAL" | grep "$CURRENT_DEVICE connected" | sed '/.*connected.*[[:blank:]]\+\([0-9]\+x[0-9]\++[0-9]\++[0-9]\+\).*/{s//\1/;h};${x;/./{x;q0};x;q1}')
+        CURRENT_DISP_VALID=$?
         DISP_RESOLUTION=$(echo "$CURRENT_RES_AND_POS" | sed 's/\([0-9]\+x[0-9]\+\)+.*/\1/')
         DISP_POSITION=$(echo "$CURRENT_RES_AND_POS" | sed 's/[0-9]\+x[0-9]\++\([0-9]\+\)+\([0-9]\+\)/\1x\2/')
         DISP_REFRATE=$(echo "$DISP_ORIGINAL" | grep "$CURRENT_DEVICE connected" -A1 | grep -v connected | sed 's/.*[[:blank:]]\([0-9]\+\.[0-9]\+\)\*.*/\1/')
@@ -45,7 +46,7 @@ do
                 DISP_XRANDR_CMD_RESTORE="$DISP_XRANDR_CMD_RESTORE --output $CURRENT_DEVICE --primary --mode $DISP_RESOLUTION --pos $DISP_POSITION --rate $DISP_REFRATE --auto"
                 DISP_XRANDR_CMD_APPLY="$DISP_XRANDR_CMD_APPLY --output $CURRENT_DEVICE --primary --mode $TARGET_RESOLUTION --rate $DISP_REFRATE --auto"
         else
-                DISP_XRANDR_CMD_RESTORE="$DISP_XRANDR_CMD_RESTORE --output $CURRENT_DEVICE --mode $DISP_RESOLUTION --pos $DISP_POSITION --rate $DISP_REFRATE --auto"
+                if [[ "$CURRENT_DISP_VALID" == "0" ]]; then DISP_XRANDR_CMD_RESTORE="$DISP_XRANDR_CMD_RESTORE --output $CURRENT_DEVICE --mode $DISP_RESOLUTION --pos $DISP_POSITION --rate $DISP_REFRATE --auto"; fi
                 DISP_XRANDR_CMD_APPLY="$DISP_XRANDR_CMD_APPLY --output $CURRENT_DEVICE --off"
         fi
 done
