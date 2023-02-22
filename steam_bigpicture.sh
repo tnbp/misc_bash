@@ -66,7 +66,7 @@ INHIBIT_PID=$!
 
 STEAM_PID=$(pidof steam | cut -d ' ' -f1)
 if [[ -z $STEAM_PID ]]; then
-        steam -bigpicture &
+        steam -oldbigpicture -bigpicture &
         STEAM_PID=$!
         wait $STEAM_PID
 else
